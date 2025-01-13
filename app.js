@@ -6,9 +6,10 @@ const bodyparser = require("body-parser")
 const userRoute= require('./routes/userRoute.js')
 const candidatesRoute = require('./routes/candidatesRoute.js')
 const mongoose = require ('mongoose');
-const { isAdmin } = require("./routes/verifyToken.js");
-
+ 
 const PORT = process.env.PORT || 3000;
+app.use(express.json());
+
 
 app.use(bodyparser.json()) //req.body
 
@@ -27,6 +28,6 @@ app.use("/candidates", candidatesRoute);
 
 
 
-app.listen(PORT ,(req,res)=>{
+app.listen(process.env.PORT ||3000 ,(req,res)=>{
     console.log(`your voting app is runing on port number ${PORT}`)
 })
