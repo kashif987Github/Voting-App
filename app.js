@@ -15,7 +15,7 @@ app.use(bodyparser.json()) //req.body
 
 
 mongoose.connect(
-    process.env.MONGO_URL_LOCAL
+    process.env.MONGO_URL_LOCAL , { useNewUrlParser: true, useUnifiedTopology: true }
 ).then(()=>{
     console.log("db connection successful ");
 }).catch((err)=>{
