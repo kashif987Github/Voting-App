@@ -66,13 +66,16 @@ route.post("/", isAdmin, async (req,res)=>{
     // const userID=req.user.id;
 
     try{
+        const {candidateID}=req.params;
+        const userID = req.user.id;
+
         // find the candidates document with specific candidateID
-        const candidate = await candidatesModel.findById(req.params.candidateID);
+        const candidate = await candidatesModel.findById(candidateID);
         if (!candidate) {
             return res.status(404).json({ message: "Candidate not found" });
         }
         
-        const user = await userModel.findById(req.user.id);
+        const user = await userModel.findById(userID);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -91,9 +94,14 @@ route.post("/", isAdmin, async (req,res)=>{
         /// updating Candidate Schema to record the vote 
         candidate.votes.push({ user: userID }); // Record user's vote
          candidate.votecount += 1; // Increment vote count
+         console.log("Candidate after updating votes:", candidate); // Debugging log
+
+         user.isVoted = true; // Mark user as having voted
+
+         console.log("User after updating isVoted:", user); // Debugging log
+
          await candidate.save();
 
-        user.isVoted = true; // Mark user as having voted
         await user.save();
 
         
@@ -111,35 +119,6 @@ route.post("/", isAdmin, async (req,res)=>{
 
 
 
- //// vote count in sorted order ..how many vote each party gain //
-
- route.get("/vote/count",async(req,res)=>{
-    try{
-        /// find all candidates and sort them by votecount in descending order 
-        const candidate =await candidatesModel.find().sort({votecount:'desc'})
-
-        /// map the candidates to only return thier name and votecount
-
-        const voterecord = candidate.map((data)=>{
-            return{
-                name:data.name,
-                party:data.party,
-                count:data.votecount
-
-            }
-
-        })
-        
-        return res.status(200).json(voterecord)
-
-
-    }catch(err){
-        res.status(500).json({error:"internal server error"});
-
-    }
-     
-
- })
 
  
 module.exports=route
